@@ -1,7 +1,7 @@
 # importing needed packages
 import pandas as pd
 import matplotlib.pyplot as plt
-# from wordcloud import WordCloud
+from wordcloud import WordCloud
 
 # load data
 wordgame = pd.read_csv("C:/Users/ecriggins/Downloads/wordgame.csv")
@@ -31,11 +31,11 @@ plt.xlim(-.5, 20.5)
 plt.show()
 plt.savefig("Bar Chart - Radio.png")
 # create a word cloud object
-#wc = WordCloud(background_color = 'white', max_words = 100).generate(string)
+wc = WordCloud(background_color = 'white', max_words = 100).generate(string)
 
 # visualize
-#plt.imshow(wc)
-#plt.axis("off")
+plt.imshow(wc)
+plt.axis("off")
 
 # save figure
-#plt.savefig("Word Cloud Radio.png")
+plt.savefig("Word Cloud Radio.png")
