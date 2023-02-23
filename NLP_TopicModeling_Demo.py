@@ -41,7 +41,7 @@ if __name__ == '__main__':
     stop_words = stopwords.words('english')
     # add to stopwords
     stop_words.extend(['pandemic'])
-    # remove stopwords
+    # remove stopwords with lambda x
     article['Clean_text'] = article['Clean_text'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_words)]))
 
     # EDA
@@ -55,6 +55,13 @@ if __name__ == '__main__':
     # save fig
     plt.savefig("Word Cloud Articles.png")
 
+    # create function to stem
+    # create stem object
+    porter = PorterStemmer()
+    def stem_sentence(sentence):
+        token_words = word_tokenize(sentence)
+        token_words
+        stem_sentence = []
     # create function to convert sentence to words
     def sent_to_words(sentences):
         for sentence in sentences:
@@ -64,7 +71,9 @@ if __name__ == '__main__':
     # function to remove stopwords
     def remove_stopwords(texts):
         return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
+    # clean text to a list
     data = article.Clean_text.values.tolist()
+    # use function to break sentences into words
     data_words = list(sent_to_words(data))
     # use function to remove stop words
     data_words = remove_stopwords(data_words)
@@ -79,7 +88,7 @@ if __name__ == '__main__':
     # term document frequency
     corpus = [id2word.doc2bow(text) for text in texts]
 
-    # view
+    # view the first row, first column, up to 30 words
     print(corpus[:1][0][:30])
 
     # LDA model training
