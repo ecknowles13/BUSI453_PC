@@ -16,7 +16,7 @@ if __name__ == '__main__':
     import pyLDAvis
     from textblob import TextBlob
     from nltk.sentiment.vader import SentimentIntensityAnalyzer
-    import openpyxl
+    #import openpyxl
 
     # load data
     article = pd.read_csv('C:/Users/ecriggins/Downloads/NYT_articles.csv')
@@ -28,11 +28,21 @@ if __name__ == '__main__':
     print(article.dtypes)
 
     # remove punctuation/lower case
-    article['Clean_text'] = article['abstract'].map(lambda x: re.sub(',', '', str(x)))
+    article['Clean_text'] = article['abstract'].map(lambda x: re.sub('\W+', ' ', str(x)))
     print(article.head())
     # convert to lowercase
     article['Clean_text'] = article['Clean_text'].map(lambda x: x.lower())
     print(article.head())
+    # remove words less than 3 characters
+    article['Clean_text'] = article['Clean_text'].map(lambda x: re.sub(r'\b\w{1,3}\b', '', str(x)))
+    print(article.head())
+    # remove stopwords
+    # create stopwords object
+    stop_words = stopwords.words('english')
+    # add to stopwords
+    stop_words.extend(['pandemic'])
+    # remove stopwords
+    article['Clean_text'] = article['Clean_text'].apply(lambda x: ' '.join([word for word in x.split() if word not in (stop_words)]))
 
     # EDA
     # join all text together in a single string
@@ -44,11 +54,6 @@ if __name__ == '__main__':
     plt.axis("off")
     # save fig
     plt.savefig("Word Cloud Articles.png")
-
-    # create stopwords object
-    stop_words = stopwords.words('english')
-    # add to stopwords
-    stop_words.extend(['more'])
 
     # create function to convert sentence to words
     def sent_to_words(sentences):
@@ -79,7 +84,7 @@ if __name__ == '__main__':
 
     # LDA model training
     # keeping default params to keep it simple, but will chx number of topics
-    num_topics = 10
+    num_topics = 4
 
     # build LDA model
     lda_model = gensim.models.LdaMulticore(corpus=corpus, id2word=id2word, num_topics=num_topics)
