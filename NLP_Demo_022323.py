@@ -54,3 +54,65 @@ if __name__ == '__main__':
     plt.axis("off")
     # save figure
     plt.savefig("NYT Word Cloud.png")
+
+    # create a function to convert sentence to words
+    def sent_to_word(sentences):
+        for sentence in sentences:
+            yield(gensim.utils.simple_preprocess(str(sentence), deacc=True)) # deacc = True then it removes punctuation
+
+    # function that removes stopwords
+    def remove_stopwords(texts):
+        return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
+    data = article.Clean_text.values.tolist()
+    data_words = list(sent_to_word(data))
+    # use function to remove the stopwords
+    data_words = remove_stopwords(data_words)
+    print(data_words[:1][0][:20])
+
+    ################## Topic Modeling
+    # create a dictionary
+    id2word = corpora.Dictionary(data_words)
+    # create corpus
+    texts = data_words
+    # term document frequency
+    corpus = [id2word.doc2bow(text) for text in texts]
+
+    # view
+    print(corpus[:1][0][:20])
+
+    # LDA model training
+    # keep the default parameters to keep it simple, but will check the number of topics
+    num_tops = 20
+
+    # build the LDA model
+    lda_model = gensim.models.LdaMulticore(corpus = corpus, id2word=id2word, num_topics=num_tops)
+
+    # print the keyword for each topic
+    pprint(lda_model.print_topics())
+    doc_lda = lda_model[corpus]
+
+    # visualize the topics
+    visualization = pyLDAvis.gensim_models.prepare(lda_model, corpus, id2word)
+    pyLDAvis.save_html(visualization, 'LDA_Visualization.html')
+
+    # Sentiment analysis using TextBlob
+    # create a column for polarity, by using apply to iterate across data rows
+    article['polarity'] = article.apply(lambda x: TextBlob(x['Clean_text']).sentiment.polarity, axis = 1)
+    # display
+    print(article.head())
+
+    # sentiment analyzer using Vader
+    # import nltk vader_lexicon
+    ntlk.downloader.download('vader_lexicon')
+    # create sentiment intensity analyzer object
+    sid = SentimentIntensityAnalyzer()
+
+    # apply across
+    article['sentiments'] = article['Clean_text'].apply(lambda x: sid.polarity_scores(x))
+    article = pd.concat([article.drop(['sentiments'], axis = 1), article['sentiments'].apply(pd.Series)], axis = 1)
+
+    # view new dataframe
+    print(article.head())
+
+    # export to excel
+    article.to_excel('Article_Sent_Analysis.xlsx')
