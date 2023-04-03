@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     # sentiment analyzer using Vader
     # import nltk vader_lexicon
-    ntlk.downloader.download('vader_lexicon')
+    nltk.downloader.download('vader_lexicon')
     # create sentiment intensity analyzer object
     sid = SentimentIntensityAnalyzer()
 
