@@ -81,7 +81,7 @@ c = 1  # initialize the plot counter
 fig = plt.figure(figsize=(14,10))
 
 # loop
-for i in variables, c in colors:
+for i in variables:
     plt.subplot(a, b, c)
     plt.title(i.title())
     plt.xlabel(i)
